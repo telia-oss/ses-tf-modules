@@ -1,0 +1,23 @@
+{
+  "version": "0",
+  "id": "111-222-222-222-222",
+  "detail-type": "RDS DB Instance Event",
+  "source": "aws.rds",
+  "account": "1234567890",
+  "time": "2022-10-20T04:19:21Z",
+  "region": "eu-west-1",
+  "resources": [
+    "arn:aws:rds:eu-west-1:1234567890:db:event-test"
+  ],
+  "detail": {
+    "EventCategories": [
+      "backup"
+    ],
+    "SourceType": "DB_INSTANCE",
+    "SourceArn": "arn:aws:rds:eu-west-1:1234567890:db:event-test",
+    "Date": "2022-10-20T04:19:21.983Z",
+    "Message": "Finished DB Instance backup",
+    "SourceIdentifier": "event-test",
+    "EventID": "RDS-EVENT-0006"
+  }
+}
