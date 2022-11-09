@@ -22,15 +22,21 @@ variable "action_x-forwarded-for" {
   default     = "count"
 
   validation {
-    condition = var.action_x-forwarded-for == "allow" || var.action_x-forwarded-for == "block" || var.action_x-forwarded-for == "captcha" || var.action_x-forwarded-for == "count"
+    condition     = var.action_x-forwarded-for == "allow" || var.action_x-forwarded-for == "block" || var.action_x-forwarded-for == "captcha" || var.action_x-forwarded-for == "count"
     error_message = "Only (allow | block | captcha | count) are allowed."
   }
 }
 
 variable "paths" {
   description = "List of the paths to be rated"
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
+}
+
+variable "text_transformation_type" {
+  description = "List of text transformation types like: BASE64_DECODE, BASE64_DECODE_EXT, CMD_LINE, ... more: https://docs.aws.amazon.com/waf/latest/APIReference/API_TextTransformation.html"
+  type        = list(string)
+  default     = ["NONE"]
 }
 
 variable "environment" {

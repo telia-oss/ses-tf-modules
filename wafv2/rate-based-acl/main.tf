@@ -66,14 +66,21 @@ resource "aws_wafv2_web_acl" "rate_based" {
           content {
             or_statement {
               dynamic "statement" {
-                for_each = { for idx, path in var.paths: (idx) => path }
+                for_each = var.paths
                 content {
                   byte_match_statement {
+                    field_to_match {
+                      uri_path {}
+                    }
                     positional_constraint = "CONTAINS"
                     search_string         = statement.value
-                    text_transformation {
-                      priority = tonumber(scope_down_statement.key)
-                      type     = "NONE"
+
+                    dynamic "text_transformation" {
+                      for_each = { for idx, tr_type in var.text_transformation_type : (idx) => tr_type }
+                      content {
+                        priority = tonumber(text_transformation.key)
+                        type     = text_transformation.value
+                      }
                     }
                   }
                 }
