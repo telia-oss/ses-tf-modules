@@ -1,7 +1,7 @@
 
 
 variable "domain_name" {
-  description = " Domain name, values is used in the ALB name"
+  description = " Domain name, value is used in the ALB name"
   type        = string
 }
 
@@ -27,7 +27,7 @@ variable "route53_record_prefix" {
 }
 
 variable "route53_zone_name" {
-  description = "Route53 zone name to assign to this ALB"
+  description = "Route53 zone name where A record pointing ALB will be created"
   type        = string
 }
 

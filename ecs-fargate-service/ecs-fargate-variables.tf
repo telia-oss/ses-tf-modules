@@ -46,7 +46,7 @@ variable "task_container_port" {
 }
 
 variable "task_container_monitoring_port" {
-  description = "Port that the container exposes for monitoring"
+  description = "Port that the container exposes for monitoring, if 0 no additional port is exposed"
   type        = number
   default     = 0
 }
@@ -119,7 +119,7 @@ variable "stop_timeout" {
 }
 
 variable "task_container_command" {
-  description = "The command that is passed to the container."
+  description = "The command that is passed to the container. Can override CMD defined Dockerfile"
   default     = []
   type        = list(string)
 }
@@ -185,11 +185,6 @@ variable "alb_https_listener_arns" {
   type        = list(string)
 }
 
-//variable "alb_routing_priority" {
-//  description = "Alb routing priority"
-//  type = number
-//}
-
 variable "listener_rule_paths" {
   description = "Paths that will be used in routing to the service in path based routing"
   type        = list(string)
@@ -212,12 +207,6 @@ variable "route53_service_suffix" {
   description = "Suffix added to service in R53"
   type        = string
   default     = ""
-}
-
-variable "service_ignore_changes" {
-  description = ""
-  type        = list(string)
-  default     = []
 }
 
 variable "deployment_config_name" {
