@@ -12,19 +12,19 @@ variable "s3_bucket_suffix_name" {
 variable "s3_lifecycle_status" {
   description = "Enables autodeletion of logs in S3 after a number of days set in s3_lifecycle_expiration_days."
   type        = string
-  default       = "Enabled"
+  default     = "Enabled"
 }
 
 variable "s3_lifecycle_expiration_prefix" {
   description = "Only objects under this prefix are included in the lifecycle"
   type        = string
-  default       = "AWSLogs/"
+  default     = "AWSLogs/"
 }
 
 variable "s3_lifecycle_expiration_days" {
   description = "Number of days for which logs are stored in S3. Defaults to 30 days"
   type        = number
-  default       = 30
+  default     = 30
 }
 
 variable "tags" {

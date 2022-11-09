@@ -18,68 +18,71 @@ resource "aws_wafv2_web_acl" "rate_based" {
   }
 
 
-  rule {
-    name     = "x-forwarded-for"
-    priority = 1
+  dynamic "rule" {
+    for_each = var.enable_x-forwarded-for_rule ? ["x-forwarded-for"] : []
+    content {
+      name     = "x-forwarded-for"
+      priority = 1
 
-    dynamic "action" {
-      for_each = var.action_x-forwarded-for == "allow" ? ["allow"] : []
-      content {
-        allow {}
-      }
-    }
-
-    dynamic "action" {
-      for_each = var.action_x-forwarded-for == "block" ? ["block"] : []
-      content {
-        block {}
-      }
-    }
-
-    dynamic "action" {
-      for_each = var.action_x-forwarded-for == "count" ? ["count"] : []
-      content {
-        count {}
-      }
-    }
-
-    dynamic "action" {
-      for_each = var.action_x-forwarded-for == "captcha" ? ["captcha"] : []
-      content {
-        captcha {}
-      }
-    }
-
-    statement {
-      rate_based_statement {
-
-        limit              = var.rate_based_limit
-        aggregate_key_type = "FORWARDED_IP"
-
-        forwarded_ip_config {
-          fallback_behavior = "NO_MATCH"
-          header_name       = "X-Forwarded-For"
+      dynamic "action" {
+        for_each = var.action_x-forwarded-for == "allow" ? ["allow"] : []
+        content {
+          allow {}
         }
+      }
 
-        dynamic "scope_down_statement" {
-          for_each = length(var.paths) > 0 ? ["scope_down_statement"] : []
-          content {
-            or_statement {
-              dynamic "statement" {
-                for_each = var.paths
-                content {
-                  byte_match_statement {
-                    field_to_match {
-                      uri_path {}
-                    }
-                    positional_constraint = "CONTAINS"
-                    search_string         = statement.value
+      dynamic "action" {
+        for_each = var.action_x-forwarded-for == "block" ? ["block"] : []
+        content {
+          block {}
+        }
+      }
 
-                    dynamic "text_transformation" {
-                      for_each = { for idx, tr_type in var.text_transformation_type : (idx) => tr_type }
-                      content {
-                        priority = tonumber(text_transformation.key)
-                        type     = text_transformation.value
+      dynamic "action" {
+        for_each = var.action_x-forwarded-for == "count" ? ["count"] : []
+        content {
+          count {}
+        }
+      }
+
+      dynamic "action" {
+        for_each = var.action_x-forwarded-for == "captcha" ? ["captcha"] : []
+        content {
+          captcha {}
+        }
+      }
+
+      statement {
+        rate_based_statement {
+
+          limit              = var.rate_based_limit_x-forwarded-for
+          aggregate_key_type = "FORWARDED_IP"
+
+          forwarded_ip_config {
+            fallback_behavior = "NO_MATCH"
+            header_name       = "X-Forwarded-For"
+          }
+
+          dynamic "scope_down_statement" {
+            for_each = length(var.paths_x-forwarded-for) > 0 ? ["scope_down_statement"] : []
+            content {
+              or_statement {
+                dynamic "statement" {
+                  for_each = var.paths_x-forwarded-for
+                  content {
+                    byte_match_statement {
+                      field_to_match {
+                        uri_path {}
+                      }
+                      positional_constraint = "CONTAINS"
+                      search_string         = statement.value
+
+                      dynamic "text_transformation" {
+                        for_each = { for idx, tr_type in var.text_transformation_type_x-forwarded-for : (idx) => tr_type }
+                        content {
+                          priority = tonumber(text_transformation.key)
+                          type     = text_transformation.value
+                        }
                       }
                     }
                   }
@@ -89,12 +92,91 @@ resource "aws_wafv2_web_acl" "rate_based" {
           }
         }
       }
-    }
 
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "${var.environment}-x-forwarded-for"
-      sampled_requests_enabled   = false
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "${var.environment}-x-forwarded-for"
+        sampled_requests_enabled   = false
+      }
+    }
+  }
+
+  dynamic "rule" {
+    for_each = var.enable_client-ip_rule ? ["client-ip"] : []
+    content {
+      name     = "client-ip"
+      priority = 2
+
+      dynamic "action" {
+        for_each = var.action_client-ip == "allow" ? ["allow"] : []
+        content {
+          allow {}
+        }
+      }
+
+      dynamic "action" {
+        for_each = var.action_client-ip == "block" ? ["block"] : []
+        content {
+          block {}
+        }
+      }
+
+      dynamic "action" {
+        for_each = var.action_client-ip == "count" ? ["count"] : []
+        content {
+          count {}
+        }
+      }
+
+      dynamic "action" {
+        for_each = var.action_client-ip == "captcha" ? ["captcha"] : []
+        content {
+          captcha {}
+        }
+      }
+
+      statement {
+        rate_based_statement {
+
+          limit              = var.rate_based_limit_client-ip
+          aggregate_key_type = "IP"
+
+          dynamic "scope_down_statement" {
+            for_each = length(var.paths_client-ip) > 0 ? ["scope_down_statement"] : []
+            content {
+              or_statement {
+                dynamic "statement" {
+                  for_each = var.paths_client-ip
+                  content {
+                    byte_match_statement {
+                      field_to_match {
+                        uri_path {}
+                      }
+                      positional_constraint = "CONTAINS"
+                      search_string         = statement.value
+
+                      dynamic "text_transformation" {
+                        for_each = { for idx, tr_type in var.text_transformation_type_client-ip : (idx) => tr_type }
+                        content {
+                          priority = tonumber(text_transformation.key)
+                          type     = text_transformation.value
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "${var.environment}-client-ip"
+        sampled_requests_enabled   = false
+      }
+
     }
   }
 
