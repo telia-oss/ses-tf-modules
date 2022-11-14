@@ -1,5 +1,5 @@
 resource "aws_wafv2_web_acl" "rate_based" {
-  name        = "rate-based"
+  name        = length(var.name_prefix) == 0 ? "rate-based" : "${var.name_prefix}-rate-based"
   description = "Rate based ACL"
   scope       = "REGIONAL"
 

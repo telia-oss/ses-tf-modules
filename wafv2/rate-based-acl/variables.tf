@@ -1,3 +1,9 @@
+variable "name_prefix" {
+  description = "Prefix used with ACL name"
+  default     = ""
+  type        = string
+}
+
 variable "aws_managed_resource_arns" {
   description = "ARNs of an Application Load Balancers, an Amazon API Gateway stage, or an Amazon Cognito User Pool."
   type        = list(string)
