@@ -223,8 +223,6 @@ resource "aws_wafv2_web_acl" "rate_based" {
   }
 }
 
-
-
 resource "aws_wafv2_web_acl_association" "resource_association" {
   for_each     = toset(var.aws_managed_resource_arns)
   resource_arn = each.value
