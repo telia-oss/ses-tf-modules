@@ -17,7 +17,6 @@ resource "aws_wafv2_web_acl" "rate_based" {
     }
   }
 
-
   dynamic "rule" {
     for_each = var.enable_x-forwarded-for_rule ? ["x-forwarded-for"] : []
     content {
@@ -180,6 +179,41 @@ resource "aws_wafv2_web_acl" "rate_based" {
     }
   }
 
+  dynamic "rule" {
+    for_each = var.enable_ip_whitelisting_rule ? ["whitelist"] : []
+
+    content {
+      name     = "whitelist"
+      priority = 0
+
+      statement {
+        ip_set_reference_statement {
+
+          arn = aws_wafv2_ip_set.whitelist.arn
+
+          dynamic "ip_set_forwarded_ip_config" {
+            for_each = var.enable_x-forwarded-for_rule ? ["x-forwarded-for"] : []
+            content {
+              header_name       = "X-Forwarded-For"
+              fallback_behavior = "NO_MATCH"
+              position          = "FIRST"
+            }
+          }
+        }
+      }
+
+      action {
+        allow {}
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "${var.environment}-whitelisting"
+        sampled_requests_enabled   = false
+      }
+    }
+  }
+
   tags = var.tags
 
   visibility_config {
@@ -189,8 +223,20 @@ resource "aws_wafv2_web_acl" "rate_based" {
   }
 }
 
+
+
 resource "aws_wafv2_web_acl_association" "resource_association" {
   for_each     = toset(var.aws_managed_resource_arns)
   resource_arn = each.value
   web_acl_arn  = aws_wafv2_web_acl.rate_based.arn
+}
+
+resource "aws_wafv2_ip_set" "whitelist" {
+  name               = "Whitelist"
+  description        = "Whitelist IP set"
+  scope              = "REGIONAL"
+  ip_address_version = "IPV4"
+  addresses          = var.ip_whitelist
+
+  tags = var.tags
 }
