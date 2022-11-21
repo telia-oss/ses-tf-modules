@@ -96,3 +96,15 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "enable_ip_whitelisting_rule" {
+  description = "true | false if IP whitelisting rule should be created with the priority 0, var.enable_x-forwarded-for_rule is indicating if IP should be taken from the x-forwarded-for header"
+  type        = bool
+  default     = false
+}
+
+variable "ip_whitelist" {
+  description = "Set of IPs used in the whitelisting rule in CIDR format a.b.c.d/32"
+  type        = list(string)
+  default     = []
+}
