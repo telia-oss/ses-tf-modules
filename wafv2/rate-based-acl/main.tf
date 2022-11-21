@@ -185,7 +185,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
 
 
   dynamic "rule" {
-    for_each = var.enable_ip_whitelisting_x-forwarded-for ? ["whitelist-x-forwarded-for"] : []
+    for_each = var.enable_ip_whitelisting_x-forwarded-for ? ["x-forwarded-for"] : []
 
     content {
       name     = "whitelist-x-forwarded-for"
@@ -193,7 +193,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
 
       statement {
         ip_set_reference_statement {
-          arn = aws_wafv2_ip_set.whitelist_x-forwarded-for.arn
+          arn = aws_wafv2_ip_set.whitelist_x-forwarded-for["x-forwarded-for"].arn
           ip_set_forwarded_ip_config {
             header_name       = "X-Forwarded-For"
             fallback_behavior = "NO_MATCH"
@@ -215,7 +215,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
   }
 
   dynamic "rule" {
-    for_each = var.enable_ip_whitelisting_x-forwarded-for ? ["whitelist-client-ip"] : []
+    for_each = var.enable_ip_whitelisting_x-forwarded-for ? ["client-ip"] : []
 
     content {
       name     = "whitelist-client-ip"
@@ -223,7 +223,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
 
       statement {
         ip_set_reference_statement {
-          arn = aws_wafv2_ip_set.whitelist_x-forwarded-for.arn
+          arn = aws_wafv2_ip_set.whitelist_x-forwarded-for["client-ip"].arn
         }
 
       }
@@ -255,6 +255,8 @@ resource "aws_wafv2_web_acl_association" "resource_association" {
 }
 
 resource "aws_wafv2_ip_set" "whitelist_client-ip" {
+  for_each = var.enable_ip_whitelisting_x-forwarded-for ? ["client-ip"] : []
+
   name               = "Whitelist"
   description        = "Whitelist IP set for client-ip"
   scope              = "REGIONAL"
@@ -266,6 +268,8 @@ resource "aws_wafv2_ip_set" "whitelist_client-ip" {
 
 
 resource "aws_wafv2_ip_set" "whitelist_x-forwarded-for" {
+  for_each = var.enable_ip_whitelisting_x-forwarded-for ? ["x-forwarded-for"] : []
+
   name               = "Whitelist"
   description        = "Whitelist IP set for x-forwarded-for"
   scope              = "REGIONAL"
