@@ -255,7 +255,7 @@ resource "aws_wafv2_web_acl_association" "resource_association" {
 }
 
 resource "aws_wafv2_ip_set" "whitelist_client-ip" {
-  for_each = var.enable_ip_whitelisting_x-forwarded-for ? ["client-ip"] : []
+  for_each = var.enable_ip_whitelisting_client-ip ? ["client-ip"] : []
 
   name               = "Whitelist"
   description        = "Whitelist IP set for client-ip"
