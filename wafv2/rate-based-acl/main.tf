@@ -1,3 +1,7 @@
+# rules priorities:
+# 0,1 dedicated from whitelisting
+# 2,3 dedicated to rate_based rules
+
 resource "aws_wafv2_web_acl" "rate_based" {
   name        = length(var.name_prefix) == 0 ? "rate-based" : "${var.name_prefix}-rate-based"
   description = "Rate based ACL"
@@ -21,7 +25,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
     for_each = var.enable_x-forwarded-for_rule ? ["x-forwarded-for"] : []
     content {
       name     = "x-forwarded-for"
-      priority = 1
+      priority = 2
 
       dynamic "action" {
         for_each = var.action_x-forwarded-for == "allow" ? ["allow"] : []
@@ -104,7 +108,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
     for_each = var.enable_client-ip_rule ? ["client-ip"] : []
     content {
       name     = "client-ip"
-      priority = 2
+      priority = 3
 
       dynamic "action" {
         for_each = var.action_client-ip == "allow" ? ["allow"] : []
@@ -179,36 +183,57 @@ resource "aws_wafv2_web_acl" "rate_based" {
     }
   }
 
+
   dynamic "rule" {
-    for_each = var.enable_ip_whitelisting_rule ? ["whitelist"] : []
+    for_each = var.enable_ip_whitelisting_x-forwarded-for ? ["whitelist-x-forwarded-for"] : []
 
     content {
-      name     = "whitelist"
+      name     = "whitelist-x-forwarded-for"
       priority = 0
 
       statement {
         ip_set_reference_statement {
-
-          arn = aws_wafv2_ip_set.whitelist.arn
-
-          dynamic "ip_set_forwarded_ip_config" {
-            for_each = var.enable_x-forwarded-for_rule ? ["x-forwarded-for"] : []
-            content {
-              header_name       = "X-Forwarded-For"
-              fallback_behavior = "NO_MATCH"
-              position          = "FIRST"
-            }
+          arn = aws_wafv2_ip_set.whitelist_x-forwarded-for.arn
+          ip_set_forwarded_ip_config {
+            header_name       = "X-Forwarded-For"
+            fallback_behavior = "NO_MATCH"
+            position          = "FIRST"
           }
         }
-      }
 
+      }
       action {
         allow {}
       }
 
       visibility_config {
         cloudwatch_metrics_enabled = true
-        metric_name                = "${var.environment}-whitelisting"
+        metric_name                = "${var.environment}-whitelisting-x-forwarded-for"
+        sampled_requests_enabled   = false
+      }
+    }
+  }
+
+  dynamic "rule" {
+    for_each = var.enable_ip_whitelisting_x-forwarded-for ? ["whitelist-client-ip"] : []
+
+    content {
+      name     = "whitelist-client-ip"
+      priority = 1
+
+      statement {
+        ip_set_reference_statement {
+          arn = aws_wafv2_ip_set.whitelist_x-forwarded-for.arn
+        }
+
+      }
+      action {
+        allow {}
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "${var.environment}-whitelisting-x-forwarded-for"
         sampled_requests_enabled   = false
       }
     }
@@ -229,12 +254,23 @@ resource "aws_wafv2_web_acl_association" "resource_association" {
   web_acl_arn  = aws_wafv2_web_acl.rate_based.arn
 }
 
-resource "aws_wafv2_ip_set" "whitelist" {
+resource "aws_wafv2_ip_set" "whitelist_client-ip" {
   name               = "Whitelist"
-  description        = "Whitelist IP set"
+  description        = "Whitelist IP set for client-ip"
   scope              = "REGIONAL"
   ip_address_version = "IPV4"
-  addresses          = var.ip_whitelist
+  addresses          = var.ip_whitelist_set_client-ip
+
+  tags = var.tags
+}
+
+
+resource "aws_wafv2_ip_set" "whitelist_x-forwarded-for" {
+  name               = "Whitelist"
+  description        = "Whitelist IP set for x-forwarded-for"
+  scope              = "REGIONAL"
+  ip_address_version = "IPV4"
+  addresses          = var.ip_whitelist_set_x-forwarded-for
 
   tags = var.tags
 }
