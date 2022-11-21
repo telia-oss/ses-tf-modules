@@ -67,7 +67,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
           }
 
           dynamic "scope_down_statement" {
-            for_each = length(var.paths_x-forwarded-for) > 0 ? ["scope_down_statement"] : []
+            for_each = length(var.paths_x-forwarded-for) > 1 ? ["scope_down_statement"] : []
             content {
               or_statement {
                 dynamic "statement" {
@@ -93,6 +93,29 @@ resource "aws_wafv2_web_acl" "rate_based" {
               }
             }
           }
+
+          # I would love to find a better way of doing that ...
+          dynamic "scope_down_statement" {
+            for_each = length(var.paths_x-forwarded-for) == 1 ? ["scope_down_statement"] : []
+            content {
+              byte_match_statement {
+                field_to_match {
+                  uri_path {}
+                }
+                positional_constraint = "CONTAINS"
+                search_string         = var.paths_x-forwarded-for[0]
+
+                dynamic "text_transformation" {
+                  for_each = { for idx, tr_type in var.text_transformation_type_x-forwarded-for : (idx) => tr_type }
+                  content {
+                    priority = tonumber(text_transformation.key)
+                    type     = text_transformation.value
+                  }
+                }
+              }
+            }
+          }
+
         }
       }
 
@@ -145,7 +168,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
           aggregate_key_type = "IP"
 
           dynamic "scope_down_statement" {
-            for_each = length(var.paths_client-ip) > 0 ? ["scope_down_statement"] : []
+            for_each = length(var.paths_client-ip) > 1 ? ["scope_down_statement"] : []
             content {
               or_statement {
                 dynamic "statement" {
@@ -171,6 +194,28 @@ resource "aws_wafv2_web_acl" "rate_based" {
               }
             }
           }
+
+          dynamic "scope_down_statement" {
+            for_each = length(var.paths_client-ip) == 1 ? ["scope_down_statement"] : []
+            content {
+              byte_match_statement {
+                field_to_match {
+                  uri_path {}
+                }
+                positional_constraint = "CONTAINS"
+                search_string         = var.paths_client-ip[0]
+
+                dynamic "text_transformation" {
+                  for_each = { for idx, tr_type in var.text_transformation_type_x-forwarded-for : (idx) => tr_type }
+                  content {
+                    priority = tonumber(text_transformation.key)
+                    type     = text_transformation.value
+                  }
+                }
+              }
+            }
+          }
+
         }
       }
 
@@ -257,7 +302,7 @@ resource "aws_wafv2_web_acl_association" "resource_association" {
 resource "aws_wafv2_ip_set" "whitelist_client-ip" {
   for_each = var.enable_ip_whitelisting_client-ip ? toset(["client-ip"]) : toset([])
 
-  name               = "Whitelist"
+  name               = "Whitelist-client-ip"
   description        = "Whitelist IP set for client-ip"
   scope              = "REGIONAL"
   ip_address_version = "IPV4"
@@ -270,7 +315,7 @@ resource "aws_wafv2_ip_set" "whitelist_client-ip" {
 resource "aws_wafv2_ip_set" "whitelist_x-forwarded-for" {
   for_each = var.enable_ip_whitelisting_x-forwarded-for ? toset(["x-forwarded-for"]) : toset([])
 
-  name               = "Whitelist"
+  name               = "Whitelist-x-forwarded-for"
   description        = "Whitelist IP set for x-forwarded-for"
   scope              = "REGIONAL"
   ip_address_version = "IPV4"
