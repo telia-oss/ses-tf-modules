@@ -215,7 +215,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
   }
 
   dynamic "rule" {
-    for_each = var.enable_ip_whitelisting_x-forwarded-for ? ["client-ip"] : []
+    for_each = var.enable_ip_whitelisting_client-ip ? ["client-ip"] : []
 
     content {
       name     = "whitelist-client-ip"
@@ -223,7 +223,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
 
       statement {
         ip_set_reference_statement {
-          arn = aws_wafv2_ip_set.whitelist_x-forwarded-for["client-ip"].arn
+          arn = aws_wafv2_ip_set.whitelist_client-ip["client-ip"].arn
         }
 
       }
@@ -233,7 +233,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
 
       visibility_config {
         cloudwatch_metrics_enabled = true
-        metric_name                = "${var.environment}-whitelisting-x-forwarded-for"
+        metric_name                = "${var.environment}-whitelisting-client-ip"
         sampled_requests_enabled   = false
       }
     }
