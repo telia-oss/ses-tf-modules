@@ -1,6 +1,6 @@
 # rules priorities:
-# 0,1 dedicated from whitelisting
-# 2,3 dedicated to rate_based rules
+# 0,1 dedicated for whitelisting
+# 2,3 dedicated for rate_based rules
 
 resource "aws_wafv2_web_acl" "rate_based" {
   name        = length(var.name_prefix) == 0 ? "rate-based" : "${var.name_prefix}-rate-based"
