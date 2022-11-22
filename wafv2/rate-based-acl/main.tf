@@ -288,7 +288,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
     for_each = length(var.config) == 0 ? [] : ["rate-based-rule-group-reference-statement"]
     content {
       name     = "custom-rate-based-rule-group"
-      priority = 3
+      priority = 4
 
       override_action {
         none {}
