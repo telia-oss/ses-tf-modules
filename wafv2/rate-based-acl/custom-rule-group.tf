@@ -43,12 +43,19 @@ resource "aws_wafv2_rule_group" "rate-based_rule-group" {
 
       statement {
         rate_based_statement {
-
           limit              = rule.value["limit"]
           aggregate_key_type = rule.value["aggregate_key_type"]
 
+          dynamic "forwarded_ip_config" {
+            for_each = rule.value["aggregate_key_type"] == "FORWARDED_IP" ? ["forwarded_ip_config"] : []
+            content {
+              fallback_behavior = "NO_MATCH"
+              header_name       = "X-Forwarded-For"
+            }
+          }
+
           dynamic "scope_down_statement" {
-            for_each = length(rule.value["paths"]) > 0 ? ["scope_down_statement"] : []
+            for_each = length(rule.value["paths"]) > 1 ? ["scope_down_statement"] : []
             content {
               or_statement {
                 dynamic "statement" {
@@ -69,6 +76,26 @@ resource "aws_wafv2_rule_group" "rate-based_rule-group" {
                         }
                       }
                     }
+                  }
+                }
+              }
+            }
+          }
+          dynamic "scope_down_statement" {
+            for_each = length(rule.value["paths"]) == 1 ? ["scope_down_statement"] : []
+            content {
+              byte_match_statement {
+                field_to_match {
+                  uri_path {}
+                }
+                positional_constraint = "CONTAINS"
+                search_string         = rule.value["paths"][0]
+
+                dynamic "text_transformation" {
+                  for_each = { for idx, tr_type in rule.value["text_transformations"] : (idx) => tr_type }
+                  content {
+                    priority = tonumber(text_transformation.key)
+                    type     = text_transformation.value
                   }
                 }
               }
