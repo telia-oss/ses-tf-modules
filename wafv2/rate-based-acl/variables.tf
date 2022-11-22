@@ -97,14 +97,26 @@ variable "tags" {
   default     = {}
 }
 
-variable "enable_ip_whitelisting_rule" {
-  description = "true | false if IP whitelisting rule should be created with the priority 0, var.enable_x-forwarded-for_rule is indicating if IP should be taken from the x-forwarded-for header"
+variable "enable_ip_whitelisting_x-forwarded-for" {
+  description = "true | false if the x-forwarded-for whitelisting rule should be created with the priority 0, first ip will be taken from the x-forwarded-for header"
   type        = bool
   default     = false
 }
 
-variable "ip_whitelist" {
-  description = "Set of IPs used in the whitelisting rule in CIDR format a.b.c.d/32"
+variable "enable_ip_whitelisting_client-ip" {
+  description = "true | false if the client-ip whitelisting rule should be created with the priority 1"
+  type        = bool
+  default     = false
+}
+
+variable "ip_whitelist_set_x-forwarded-for" {
+  description = "Set of IPs used in the whitelisting x-forwarded-for rule in CIDR format a.b.c.d/32"
+  type        = list(string)
+  default     = []
+}
+
+variable "ip_whitelist_set_client-ip" {
+  description = "Set of IPs used in the whitelisting client-ip rule in CIDR format a.b.c.d/32"
   type        = list(string)
   default     = []
 }
