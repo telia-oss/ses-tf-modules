@@ -1,5 +1,10 @@
 ## Rate Based ACL
 
+The module is creating resources for rate-base rule ACLs.
+A rate-based rule tracks the rate of requests for each originating IP address, and triggers the rule action on IPs with rates that go over a limit.
+More information can be found [here](https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based.html)
+
+
 ## Usage
 
 ### Rate Based ACL
