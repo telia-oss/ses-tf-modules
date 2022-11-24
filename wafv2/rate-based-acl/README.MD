@@ -7,6 +7,7 @@
 In general, two scenarios have been addressed:
 1. WAF is associated with a resource (e.g ALB) behind a proxy and the client address must be taken from the x-forwarded-for header.
 2. WAF is associated with a resource (e. ALB) used directly by clients. 
+
 The example is describing the both use cases, usually you will need only one.
 
 ```terraform
