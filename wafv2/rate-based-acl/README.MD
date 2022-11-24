@@ -1,4 +1,15 @@
 ## Rate Based ACL
+
+## Usage
+
+### Rate Based ACL
+
+The below example shows how to configure a common limit per all paths.
+Two scenarios have been addressed:
+1. WAF is associated with a resource (e.g ALB) behind a proxy and the client address must be taken from the x-forwarded-for header
+2. WAF is associated with a resource (e. ALB) used directly by clients. 
+The example is describing the both use cases, usually you will need only one.
+
 ```terraform
 module "rate_based_acl" {
   source = "../wafv2/rate-based-acl"
@@ -27,10 +38,10 @@ module "rate_based_acl" {
 }
 ```
 
-## Rate Based ACL with Custom Rule Group
+### Rate Based ACL with Custom Rule Group
 This rule group is intended to be used with rate based acl to allow fine grained configuration
-
-### Module usage example
+The `config` variable allows to configure limit per paths
+The `aggregate_key_type` is indicating if the IP address should be taken from the x-forwarded-for header (`FORWARDED_IP`)
 
 ```terraform
 
@@ -43,17 +54,12 @@ module "rate-based-acl-with-custom-rule-group" {
   #global rule settings for x-forwarded-for
   enable_x-forwarded-for_rule = true
   rate_based_limit_x-forwarded-for = 200
-  paths_x-forwarded-for = ["/shop/api/v2/cart/phone/add", "/shop/api/v2/cart/phone/addaaaa"]
-
-  #global rule settings for client IP
-  enable_client-ip_rule = true
-  rate_based_limit_client-ip = 200
-  paths_client-ip = ["/shop/api/v2/cart/phone/add", "/shop/api/v2/cart/phone/addaaaa"]
-
+  paths_x-forwarded-for = ["/shop/api/v2/cart/phone/add", "/shop/api/v2/cart/phone/abcd"]
+  
   config = [
     {
       rule_name = "test-api"
-      paths = ["aaa/bb/ccc", "test-1"]
+      paths = ["/aaa/bbb/ccc", "test-1"]
       action = "block"
       limit = 300
       aggregate_key_type = "FORWARDED_IP" // (FORWARDED_IP | IP)
@@ -71,3 +77,10 @@ module "rate-based-acl-with-custom-rule-group" {
 }
 
 ```
+
+## Requirements
+
+| Name                                                                      | Version  |
+|---------------------------------------------------------------------------|----------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | \>= 1.0  |
+| <a name="provider_aws"></a> [aws](#provider\_aws)                         | \>= 4.38 |
