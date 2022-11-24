@@ -1,4 +1,4 @@
-# Set of modules helping to improve security using AWS WAF service.
+# Set of modules helping to create resources related to AWS WAF service.
 
 The modules are dedicated to systems which are exposing services directly to public internet using:
 * Amazon API Gateway
@@ -6,7 +6,7 @@ The modules are dedicated to systems which are exposing services directly to pub
 * AWS AppSync GraphQL API
 * Amazon Cognito user pool
 
-In order to get more information please go to the corresponding module:
+In order to get more information, please go to the corresponding module:
 
 ### [rate-based-acl](./rate-based-acl/README.md)
 ### [managed-rules-acl](./managed-rules-acl/README.md)
