@@ -4,9 +4,8 @@
 
 ### Rate Based ACL
 
-The below example shows how to configure a common limit per all paths.
-Two scenarios have been addressed:
-1. WAF is associated with a resource (e.g ALB) behind a proxy and the client address must be taken from the x-forwarded-for header
+In general, two scenarios have been addressed:
+1. WAF is associated with a resource (e.g ALB) behind a proxy and the client address must be taken from the x-forwarded-for header.
 2. WAF is associated with a resource (e. ALB) used directly by clients. 
 The example is describing the both use cases, usually you will need only one.
 
@@ -17,12 +16,13 @@ module "rate_based_acl" {
   aws_managed_resource_arns = [module.main.external_lb_arn, module.main.products2_lb_arn]
   environment               = local.ENVIRONMENT
 
-  #global rule settings for x-forwarded-for
+  # global rule settings for x-forwarded-for,
+  # paths_x-forwarded-for variable has not been set so it will work for all paths
   enable_x-forwarded-for_rule = true
   rate_based_limit_x-forwarded-for = 200
-  paths_x-forwarded-for = ["/shop/api/v2/cart/phone/add", "/shop/api/v2/cart/phone/addaaaa"]
 
-  #global rule settings for client IP
+  # global rule settings for client IP
+  # paths_client-ip will generate scope-down statements which will narrow down to the defined paths
   enable_client-ip_rule = true
   rate_based_limit_client-ip = 200
   paths_client-ip = ["/shop/api/v2/cart/phone/add", "/shop/api/v2/cart/phone/addaaaa"]
@@ -39,9 +39,9 @@ module "rate_based_acl" {
 ```
 
 ### Rate Based ACL with Custom Rule Group
-This rule group is intended to be used with rate based acl to allow fine grained configuration
-The `config` variable allows to configure limit per paths
-The `aggregate_key_type` is indicating if the IP address should be taken from the x-forwarded-for header (`FORWARDED_IP`)
+This rule group is intended to be used with rate based acl to allow fine grained configuration.
+The `config` variable allows to configure limit per paths.
+The `aggregate_key_type` is indicating if the IP address should be taken from the x-forwarded-for header (`FORWARDED_IP`).
 
 ```terraform
 
