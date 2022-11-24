@@ -94,7 +94,18 @@ variable "environment" {
 variable "tags" {
   description = "Map of tags to assign to ALB."
   type        = map(string)
-  default     = {}
+}
+
+variable "capacity" {
+  description = "WCUs capacity"
+  default     = 500
+  type        = number
+}
+
+variable "config" {
+  description = "Rate based ACL custom rule group"
+  type        = list(any)
+  default     = []
 }
 
 variable "enable_ip_whitelisting_x-forwarded-for" {

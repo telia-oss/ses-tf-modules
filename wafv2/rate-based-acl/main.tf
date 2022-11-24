@@ -284,6 +284,30 @@ resource "aws_wafv2_web_acl" "rate_based" {
     }
   }
 
+  dynamic "rule" {
+    for_each = length(var.config) == 0 ? [] : ["rate-based-rule-group-reference-statement"]
+    content {
+      name     = "custom-rate-based-rule-group"
+      priority = 4
+
+      override_action {
+        none {}
+      }
+
+      statement {
+        rule_group_reference_statement {
+          arn = aws_wafv2_rule_group.rate-based_rule-group["rate-based-rule-group"].arn
+        }
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "${var.environment}-custom-rate-based-rule-group"
+        sampled_requests_enabled   = false
+      }
+    }
+  }
+
   tags = var.tags
 
   visibility_config {
