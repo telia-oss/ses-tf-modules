@@ -73,5 +73,5 @@ mongo --ssl --host {endpointId}.eu-west-1.docdb.amazonaws.com:27017 --sslCAFile 
 ```
 Connect to this cluster with an applicationCopy
 ```
-mongodb://dodb:<insertYourPassword>@{endpointId}.cluster-cb0nhklc63kl.eu-west-1.docdb.amazonaws.com:27017/?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false
+mongodb://dodb:<insertYourPassword>@{endpointId}.cluster-abcdefgh.eu-west-1.docdb.amazonaws.com:27017/?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false
 ```
