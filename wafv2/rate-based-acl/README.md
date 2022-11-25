@@ -47,7 +47,7 @@ module "rate_based_acl" {
 ### Rate Based ACL with Custom Rule Group
 This rule group is intended to be used with rate based acl to allow fine grained configuration.
 The `config` variable allows to configure limit per paths.
-The `aggregate_key_type` is indicating if the IP address should be taken from the x-forwarded-for header (`FORWARDED_IP`).
+The `aggregate_key_type` is indicating if the IP address should be taken either from the x-forwarded-for header (`FORWARDED_IP`) or from source IP (`IP`).
 
 ```terraform
 
