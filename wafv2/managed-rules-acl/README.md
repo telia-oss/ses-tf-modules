@@ -1,6 +1,7 @@
-# Terraform module for AWS WAF
+## Managed rules ACL
 
 This module templates AWS WAF manged rules
+
 ## Key features
 - AWS WAF
     - Creates AWS managed group rules
@@ -44,16 +45,6 @@ module "bot_managed_rule" {
   )
 }
 ```
-
-### Input variables
-| Name                           | Description                                                                                       | Type         | Default | Required |
-|--------------------------------|---------------------------------------------------------------------------------------------------|--------------|---------|----------|
-| aws_managed                    | Environment variable identifying resource grouping.                                               | list(object) |         | yes      |
-| resource_arn                   | ARN of an Application Load Balancer, an Amazon API Gateway stage, or an Amazon Cognito User Pool. | string       |         | yes      |
-| aws_managed_enable_association | true to add WAF to resource / false to create WAF configuration only.                             | bool         | false   | no       |
-| environment                    | Local name of this environment (eg, prod, stage, dev, feature1).                                  | string       |         | yes      |
-| tags                           | Map of tags to assign to ALB.                                                                     | map(string)  |         | yes      |
-
 
 ## TODO
 - [ ] add another tf file: `aws_rule_group.tf` to handle `aws_wafv2_rule_group`, similar to `aws_managed.tf`
