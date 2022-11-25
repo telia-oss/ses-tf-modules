@@ -10,8 +10,10 @@ More information can be found [here](https://docs.aws.amazon.com/waf/latest/deve
 ### Rate Based ACL
 
 In general, two scenarios have been addressed:
-1. WAF is associated with a resource (e.g ALB) behind a proxy and the client address must be taken from the x-forwarded-for header.
-2. WAF is associated with a resource (e. ALB) used directly by clients. 
+1. WAF is associated with a resource behind a proxy and the client address must be taken from the x-forwarded-for header.
+2. WAF is associated with a resource used directly by clients.
+WAF can be associated with folowing resources:
+Application Load Balancer (ALB), an Amazon API Gateway REST API, an AWS AppSync GraphQL API, or an Amazon Cognito user pool 
 
 The example is describing the both use cases, usually you will need only one.
 
