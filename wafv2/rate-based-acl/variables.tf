@@ -138,10 +138,10 @@ variable "enable_x-forwarded-for_alert" {
   type        = bool
   default     = false
 }
-variable "percent_threshold_x-forwarded-for" {
-  description = "Percent threshold to trigger alert for x-forwarded-for"
+variable "alert_threshold_x-forwarded-for" {
+  description = "Alert threshold to trigger alert for x-forwarded-for"
   type        = number
-  default     = 90
+  default     = 1
 }
 
 variable "x-forwarded-for_alert_sns_arn" {
@@ -156,10 +156,10 @@ variable "enable_client-ip_alert" {
   type        = bool
   default     = false
 }
-variable "percent_threshold_client-ip" {
-  description = "Percent threshold to trigger alert for client-ip"
+variable "alert_threshold_client-ip" {
+  description = "Alert threshold to trigger alert for client-ip"
   type        = number
-  default     = 90
+  default     = 1
 }
 
 variable "client-ip_alert_sns_arn" {
@@ -173,10 +173,10 @@ variable "enable_rate-based-rule-group_alert" {
   type        = bool
   default     = false
 }
-variable "percent_threshold_rate-based-rule-group" {
-  description = "Percent threshold to trigger alert for rate-based-rule-group"
+variable "alert_threshold_rate-based-rule-group" {
+  description = "Alert threshold to trigger alert for rate-based-rule-group"
   type        = number
-  default     = 90
+  default     = 1
 }
 
 variable "rate-based-rule-group_alert_sns_arn" {

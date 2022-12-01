@@ -2,6 +2,14 @@
 # 0,1 dedicated for whitelisting
 # 2,3 dedicated for rate_based rules
 
+locals {
+  metric_name = {
+    x-forwarded-for = "${var.environment}-x-forwarded-for"
+    client-ip       = "${var.environment}-client-ip"
+    rule-group      = "${var.environment}-custom-rate-based-rule-group"
+  }
+}
+
 resource "aws_wafv2_web_acl" "rate_based" {
   name        = length(var.name_prefix) == 0 ? "rate-based" : "${var.name_prefix}-rate-based"
   description = "Rate based ACL"
@@ -121,7 +129,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
 
       visibility_config {
         cloudwatch_metrics_enabled = true
-        metric_name                = "${var.environment}-x-forwarded-for"
+        metric_name                = local.metric_name["x-forwarded-for"]
         sampled_requests_enabled   = false
       }
     }
@@ -221,7 +229,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
 
       visibility_config {
         cloudwatch_metrics_enabled = true
-        metric_name                = "${var.environment}-client-ip"
+        metric_name                = local.metric_name["client-ip"]
         sampled_requests_enabled   = false
       }
 
@@ -302,7 +310,7 @@ resource "aws_wafv2_web_acl" "rate_based" {
 
       visibility_config {
         cloudwatch_metrics_enabled = true
-        metric_name                = "${var.environment}-custom-rate-based-rule-group"
+        metric_name                = local.metric_name["rule-group"]
         sampled_requests_enabled   = false
       }
     }
