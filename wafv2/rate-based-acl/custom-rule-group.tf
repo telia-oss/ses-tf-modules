@@ -113,8 +113,8 @@ resource "aws_wafv2_rule_group" "rate-based_rule-group" {
   }
 
   visibility_config {
-    cloudwatch_metrics_enabled = false
-    metric_name                = "rate-based-rule-group"
+    cloudwatch_metrics_enabled = true
+    metric_name                = "${var.environment}-rate-based-rule-group"
     sampled_requests_enabled   = false
   }
 

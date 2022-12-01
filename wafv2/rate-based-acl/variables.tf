@@ -131,3 +131,56 @@ variable "ip_whitelist_set_client-ip" {
   type        = list(string)
   default     = []
 }
+
+# SNS alerting
+variable "enable_x-forwarded-for_alert" {
+  description = "True/False to create Cloudwatch Alert for x-forwarded-for BlockedRequests limit"
+  type        = bool
+  default     = false
+}
+variable "percent_threshold_x-forwarded-for" {
+  description = "Percent threshold to trigger alert for x-forwarded-for"
+  type        = number
+  default     = 90
+}
+
+variable "x-forwarded-for_alert_sns_arn" {
+  description = "If set, alerts are sent into this SNS topic"
+  type        = list(string)
+  default     = []
+
+}
+
+variable "enable_client-ip_alert" {
+  description = "True/False to create Cloudwatch Alert for client-ip BlockedRequests limit"
+  type        = bool
+  default     = false
+}
+variable "percent_threshold_client-ip" {
+  description = "Percent threshold to trigger alert for client-ip"
+  type        = number
+  default     = 90
+}
+
+variable "client-ip_alert_sns_arn" {
+  description = "If set, alerts are sent into this SNS topic"
+  type        = list(string)
+  default     = []
+}
+
+variable "enable_rate-based-rule-group_alert" {
+  description = "True/False to create Cloudwatch Alert for rate-based-rule-group BlockedRequests limit"
+  type        = bool
+  default     = false
+}
+variable "percent_threshold_rate-based-rule-group" {
+  description = "Percent threshold to trigger alert for rate-based-rule-group"
+  type        = number
+  default     = 90
+}
+
+variable "rate-based-rule-group_alert_sns_arn" {
+  description = "If set, alerts are sent into this SNS topic"
+  type        = list(string)
+  default     = []
+}
